@@ -8,6 +8,9 @@ trigger:
 resources:
 - repo: self
 
+pool:
+      name: default
+
 variables:
 
   # Container registry service connection established during pipeline creation
@@ -25,8 +28,6 @@ stages:
   jobs:
   - job: Build
     displayName: Build
-    pool:
-      name: default
     steps:
     - task: Docker@2
       displayName: Build and push an image to container registry
@@ -48,8 +49,6 @@ stages:
   jobs:
   - deployment: Deploy
     displayName: Deploy
-    pool:
-      vmImage: $(vmImageName)
     environment: 'poojaantalazuredevops.default'
     strategy:
       runOnce:
