@@ -42,9 +42,40 @@ stages:
     - upload: manifests
       artifact: manifests
 
-- stage: Deploy
+- stage: Deploydev
   displayName: Deploy stage
   dependsOn: Build
+
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    environment: 'poojaantalazuredevops.default'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: KubernetesManifest@0
+            displayName: Create imagePullSecret
+            inputs:
+              action: createSecret
+              secretName: $(imagePullSecret)
+              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+
+          - task: KubernetesManifest@0
+            displayName: Deploy to Kubernetes cluster
+            inputs:
+              action: deploy
+              manifests: |
+                $(Pipeline.Workspace)/manifests/deployment.yml
+                $(Pipeline.Workspace)/manifests/service.yml
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepository):$(tag)
+          
+- stage: DeployQA
+  displayName: Deploy stage
+  dependsOn: Deploydev
 
   jobs:
   - deployment: Deploy
