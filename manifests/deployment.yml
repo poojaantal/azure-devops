@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: poojaantalazuredevops 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: poojaantalazuredevops
+  template:
+    metadata:
+      labels:
+        app: poojaantalazuredevops 
+    spec:
+      containers:
+        - name: poojaantalazuredevops 
+          image: acrazure1989.azurecr.io/poojaantalazuredevops
+          ports:
+          - containerPort: 80
